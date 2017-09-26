@@ -129,7 +129,7 @@ PARAM_DEFINE_FLOAT(MC_RR_INT_LIM, 0.30f);
  * @increment 0.0005
  * @group Multicopter Attitude Control
  */
-PARAM_DEFINE_FLOAT(MC_ROLLRATE_D, 0.001f);
+PARAM_DEFINE_FLOAT(MC_ROLLRATE_D, 0.00f);
 
 /**
  * Roll rate feedforward
@@ -203,7 +203,7 @@ PARAM_DEFINE_FLOAT(MC_PR_INT_LIM, 0.30f);
  * @increment 0.0005
  * @group Multicopter Attitude Control
  */
-PARAM_DEFINE_FLOAT(MC_PITCHRATE_D, 0.001f);
+PARAM_DEFINE_FLOAT(MC_PITCHRATE_D, 0.00f);
 
 /**
  * Pitch rate feedforward
