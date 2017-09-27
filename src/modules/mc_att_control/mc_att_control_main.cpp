@@ -1196,10 +1196,10 @@ MulticopterAttitudeControl::control_thrust(float dt, float thrust_est)
 
 	_thr_prev = thrust_est;
 
-	if (_thrust_sp > MIN_TAKEOFF_THRUST && !_motor_limits.saturation_status) {
-		float z_accel_i = _z_accel_int + z_accel_err * dt;
-		if (PX4_ISFINITE(z_accel_i) && z_accel_i > -_params.rattitude_thres && z_accel_i < _params.rattitude_thres) {
-			_z_accel_int = z_accel_i;
+	if (_throttle_sp > MIN_TAKEOFF_THRUST && !_motor_limits.saturation_status) {
+		float thr_i = _thr_err_int + thr_err * dt;
+		if (PX4_ISFINITE(thr_i) && thr_i > -_params.rattitude_thres && thr_i < _params.rattitude_thres) {
+			_thr_err_int = thr_i;
 		}
 	}
 }
@@ -1396,22 +1396,6 @@ MulticopterAttitudeControl::task_main()
 						_rates_sp(0) = _v_rates_sp.pitch*sinf(yaw_123) + _v_rates_sp.roll*cosf(pitch_123)*cosf(yaw_123);
 						_rates_sp(1) = _v_rates_sp.pitch*cosf(yaw_123) - _v_rates_sp.roll*cosf(pitch_123)*sinf(yaw_123);
 						_rates_sp(2) = _v_rates_sp.yaw + _v_rates_sp.roll*sinf(pitch_123);
-		  			/*
-						math::Quaternion q(_ctrl_state.q[0], _ctrl_state.q[1], _ctrl_state.q[2], _ctrl_state.q[3]);
-
-						math::Matrix<3, 3> R = q.to_dcm(); //rotation Matrix
-
-						float pitch_123 = asinf(R(0,2));
-						float yaw_123 = atan2f(-R(0,1),R(0,0));
-
-						float om_sp_x = _v_rates_sp.pitch*sinf(yaw_123) + _v_rates_sp.roll*cosf(pitch_123)*cosf(yaw_123);
-						float om_sp_y = _v_rates_sp.pitch*cosf(yaw_123) - _v_rates_sp.roll*cosf(pitch_123)*sinf(yaw_123);
-						float om_sp_z = _v_rates_sp.yaw + _v_rates_sp.roll*sinf(pitch_123);
-
-						_rates_sp(0) = om_sp_x;
-						_rates_sp(1) = om_sp_y;
-						_rates_sp(2) = om_sp_z;
-						*/
 
 						// Thrust controller
 						_params.thr_hover -=  (thrust_est - (_throttle_sp_prev/_params.thr_hover)*9.81f)*0.001f;
