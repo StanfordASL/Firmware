@@ -1149,7 +1149,7 @@ MulticopterAttitudeControl::update_az_b(float dt)
 	_vz_b_prev = _ctrl_state.z_vel;
 
 	//low-pass filter
-	float b = 2.0f*M_PI_F*200.0f*dt;
+	float b = 2.0f*M_PI_F*100.0f*dt;
 	// float b = 100.0f;
 	float a = b/(1+b);
 	_az_b = a*dvz_dt + (1-a)*_az_b_prev;
@@ -1180,11 +1180,11 @@ MulticopterAttitudeControl::control_thrust(float dt, float thrust_est)
 	}
 
 	//thrust_est = -_ctrl_state.z_acc;
-	thrust_est  = 0.5f*thrust_est - 0.5f*_ctrl_state.z_acc;
+	// thrust_est  = 0.5f*thrust_est - 0.5f*_ctrl_state.z_acc;
 	float thr_err = _thrust_sp - thrust_est;
 	float thr_dot = 0.5f*_thr_dot_prev + 0.5f*(thrust_est - _thr_prev)/dt;
-	// float thr_dot = (thrust_est - _thr_prev)/dt;
 	_thr_dot_prev = thr_dot;
+	_thr_prev = thrust_est;
 
 	_throttle_sp = (_params.acro_rate_max(0) * (thr_err/9.81f) +
 								 _params.acro_rate_max(1) * (_thr_err_int/9.81f) +
@@ -1194,7 +1194,6 @@ MulticopterAttitudeControl::control_thrust(float dt, float thrust_est)
 	// PX4_INFO("up: %d, dt: %5.3f, thrust_est: %5.3f,thrust_sp: %5.3f, throttle_sp: %5.3f",
 	// 		_thrust_sp_updated,(double)dt,(double)thrust_est,(double)_thrust_sp,(double)_throttle_sp);
 
-	_thr_prev = thrust_est;
 
 	if (_throttle_sp > MIN_TAKEOFF_THRUST && !_motor_limits.saturation_status) {
 		float thr_i = _thr_err_int + thr_err * dt;
