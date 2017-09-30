@@ -1173,16 +1173,12 @@ MulticopterAttitudeControl::control_thrust(float dt, float thrust_est)
 			_thrust_sp = (thrust_sp_norm/0.5f)*9.81f;
 		}
 
-		// _thrust_sp = (_v_rates_sp.thrust/0.5f)*9.81f;
-		// _thrust_dot_sp = 0.0f;
 	} else {
 		_thrust_sp += _thrust_dot_sp*dt;
 	}
 
-	//thrust_est = -_ctrl_state.z_acc;
-	// thrust_est  = 0.5f*thrust_est - 0.5f*_ctrl_state.z_acc;
 	float thr_err = _thrust_sp - thrust_est;
-	float thr_dot = 0.5f*_thr_dot_prev + 0.5f*(thrust_est - _thr_prev)/dt;
+	float thr_dot = (thrust_est - _thr_prev)/dt;
 	_thr_dot_prev = thr_dot;
 	_thr_prev = thrust_est;
 
