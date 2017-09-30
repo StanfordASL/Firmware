@@ -1151,8 +1151,8 @@ MulticopterAttitudeControl::update_az_b(float dt)
 	//low-pass filter
 	float b = 2.0f*M_PI_F*100.0f*dt;
 	// float b = 100.0f;
-	float a = b/(1+b);
-	_az_b = a*dvz_dt + (1-a)*_az_b_prev;
+	float a = b/(1.0f+b);
+	_az_b = a*dvz_dt + (1.0f-a)*_az_b_prev;
 	_az_b_prev = _az_b;
 }
 
@@ -1177,15 +1177,17 @@ MulticopterAttitudeControl::control_thrust(float dt, float thrust_est)
 		_thrust_sp += _thrust_dot_sp*dt;
 	}
 
-	float thr_err = _thrust_sp - thrust_est;
+	// float thr_err = _thrust_sp - thrust_est;
+
+	float thr_err = (_throttle_sp_prev/_params.thr_hover)*9.81f - thrust_est;
 	float thr_dot = (thrust_est - _thr_prev)/dt;
 	_thr_dot_prev = thr_dot;
 	_thr_prev = thrust_est;
 
-	_throttle_sp = (_params.acro_rate_max(0) * (thr_err/9.81f) +
-								 _params.acro_rate_max(1) * (_thr_err_int/9.81f) +
-								 _params.acro_rate_max(2) * ((_thrust_dot_sp - thr_dot)/9.81f) +
-								  (_thrust_sp / 9.81f))*_params.thr_hover;
+	_params.thr_hover +=  _params.acro_rate_max(0)*thr_err +
+												_params.acro_rate_max(1)*_thr_err_int +
+												_params.acro_rate_max(2)*(_thrust_dot_sp-thr_dot);
+	_throttle_sp =  (_thrust_sp / 9.81f)*_params.thr_hover;
 
 	// PX4_INFO("up: %d, dt: %5.3f, thrust_est: %5.3f,thrust_sp: %5.3f, throttle_sp: %5.3f",
 	// 		_thrust_sp_updated,(double)dt,(double)thrust_est,(double)_thrust_sp,(double)_throttle_sp);
@@ -1305,6 +1307,7 @@ MulticopterAttitudeControl::task_main()
 			float g_b_z = _R(2,2)*9.81f;
 			float om_cross_vb_z = _ctrl_state.roll_rate*_ctrl_state.y_vel - _ctrl_state.pitch_rate*_ctrl_state.x_vel;
 			thrust_est = -_az_b - om_cross_vb_z + g_b_z;
+			// thrust_est = -_ctrl_state.z_acc;
 
 
 			/* Check if we are in rattitude mode and the pilot is above the threshold on pitch
@@ -1393,7 +1396,6 @@ MulticopterAttitudeControl::task_main()
 						_rates_sp(2) = _v_rates_sp.yaw + _v_rates_sp.roll*sinf(pitch_123);
 
 						// Thrust controller
-						_params.thr_hover -=  (thrust_est - (_throttle_sp_prev/_params.thr_hover)*9.81f)*0.001f;
 						control_thrust(dt,thrust_est);
 
 					} else {
