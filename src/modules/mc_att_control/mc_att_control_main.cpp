@@ -1149,7 +1149,7 @@ MulticopterAttitudeControl::update_az_b(float dt)
 	_vz_b_prev = _ctrl_state.z_vel;
 
 	//low-pass filter
-	float b = 2.0f*M_PI_F*100.0f*dt;
+	float b = 2.0f*M_PI_F*200.0f*dt;
 	// float b = 100.0f;
 	float a = b/(1.0f+b);
 	_az_b = a*dvz_dt + (1.0f-a)*_az_b_prev;
@@ -1159,6 +1159,10 @@ MulticopterAttitudeControl::update_az_b(float dt)
 void
 MulticopterAttitudeControl::control_thrust(float dt, float thrust_est)
 {
+
+	_params.thr_hover -=  (thrust_est-_thrust_sp)*_params.thr_hover*dt;
+
+
 	if (_thrust_sp_updated) {
 		// _v_rates_sp.thrust = thrust_dot*100 + throttle_sp
 		float thrust_dot_sp_scaled = (int) (_v_rates_sp.thrust);
@@ -1179,15 +1183,16 @@ MulticopterAttitudeControl::control_thrust(float dt, float thrust_est)
 
 	// float thr_err = _thrust_sp - thrust_est;
 
-	float thr_err = (_throttle_sp_prev/_params.thr_hover)*9.81f - thrust_est;
-	float thr_dot = (thrust_est - _thr_prev)/dt;
+	float thr_dot = 0.7f*_thr_dot_prev + 0.3f*(thrust_est - _thr_prev)/dt;
+	float thr_err = (_thrust_sp + _thrust_dot_sp*0.5f*dt) - (thrust_est+thr_dot*0.5f*dt);
+
 	_thr_dot_prev = thr_dot;
 	_thr_prev = thrust_est;
 
-	_params.thr_hover +=  _params.acro_rate_max(0)*thr_err +
-												_params.acro_rate_max(1)*_thr_err_int +
-												_params.acro_rate_max(2)*(_thrust_dot_sp-thr_dot);
-	_throttle_sp =  (_thrust_sp / 9.81f)*_params.thr_hover;
+	_throttle_sp =  (_params.acro_rate_max(0)*thr_err +
+									 _params.acro_rate_max(1)*_thr_err_int +
+									 _params.acro_rate_max(2)*_thrust_dot_sp*dt +
+								   _thrust_sp)*(_params.thr_hover/9.81f);
 
 	// PX4_INFO("up: %d, dt: %5.3f, thrust_est: %5.3f,thrust_sp: %5.3f, throttle_sp: %5.3f",
 	// 		_thrust_sp_updated,(double)dt,(double)thrust_est,(double)_thrust_sp,(double)_throttle_sp);
