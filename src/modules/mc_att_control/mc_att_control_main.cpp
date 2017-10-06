@@ -1170,11 +1170,11 @@ MulticopterAttitudeControl::control_thrust(float dt, float thrust_est)
 
 		if (_v_rates_sp.thrust < 0.0f){
 			_thrust_dot_sp = (thrust_dot_sp_scaled-1.0f)/100.0f;
-			_thrust_sp = ((1.0f - thrust_sp_norm)/0.5f)*9.81f;
+			_thrust_sp = ((1.0f - thrust_sp_norm)/0.5f)*9.8066f;
 		}
 		else {
 			_thrust_dot_sp = thrust_dot_sp_scaled/100.0f;
-			_thrust_sp = (thrust_sp_norm/0.5f)*9.81f;
+			_thrust_sp = (thrust_sp_norm/0.5f)*9.8066f;
 		}
 
 	} else {
@@ -1192,7 +1192,7 @@ MulticopterAttitudeControl::control_thrust(float dt, float thrust_est)
 	_throttle_sp =  (_params.acro_rate_max(0)*thr_err +
 									 _params.acro_rate_max(1)*_thr_err_int +
 									 _params.acro_rate_max(2)*_thrust_dot_sp*dt +
-								   _thrust_sp)*(_params.thr_hover/9.81f);
+								   _thrust_sp)*(_params.thr_hover/9.8066f);
 
 	// PX4_INFO("up: %d, dt: %5.3f, thrust_est: %5.3f,thrust_sp: %5.3f, throttle_sp: %5.3f",
 	// 		_thrust_sp_updated,(double)dt,(double)thrust_est,(double)_thrust_sp,(double)_throttle_sp);
@@ -1309,7 +1309,7 @@ MulticopterAttitudeControl::task_main()
 			// Compute thrust estimate
 			math::Quaternion q(_ctrl_state.q[0], _ctrl_state.q[1], _ctrl_state.q[2], _ctrl_state.q[3]);
 			_R = q.to_dcm(); //rotation Matrix
-			float g_b_z = _R(2,2)*9.81f;
+			float g_b_z = _R(2,2)*9.8066f;
 			float om_cross_vb_z = _ctrl_state.roll_rate*_ctrl_state.y_vel - _ctrl_state.pitch_rate*_ctrl_state.x_vel;
 			thrust_est = -_az_b - om_cross_vb_z + g_b_z;
 			// thrust_est = -_ctrl_state.z_acc;

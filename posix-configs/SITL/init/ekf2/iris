@@ -55,7 +55,7 @@ param set SYS_MC_EST_GROUP 2
 param set SYS_RESTART_TYPE 2
 
 # this is actually the thrust controller PID gains (in that order)
-param set MC_ACRO_R_MAX 0.1
+param set MC_ACRO_R_MAX 0.2
 param set MC_ACRO_P_MAX 0.0
 param set MC_ACRO_Y_MAX 0.5
 param set MPC_THR_HOVER 0.55
