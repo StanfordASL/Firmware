@@ -1160,8 +1160,8 @@ void
 MulticopterAttitudeControl::control_thrust(float dt, float thrust_est)
 {
 
-	_params.thr_hover -=  (thrust_est-_thrust_sp)*_params.thr_hover*dt;
-
+	// _params.thr_hover -=  (thrust_est-(_throttle_sp*9.8066f/_params.thr_hover))*dt;
+	_params.thr_hover -= (thrust_est-_thrust_sp)*_params.thr_hover*dt;
 
 	if (_thrust_sp_updated) {
 		// _v_rates_sp.thrust = thrust_dot*100 + throttle_sp
@@ -1184,7 +1184,8 @@ MulticopterAttitudeControl::control_thrust(float dt, float thrust_est)
 	// float thr_err = _thrust_sp - thrust_est;
 
 	float thr_dot = 0.7f*_thr_dot_prev + 0.3f*(thrust_est - _thr_prev)/dt;
-	float thr_err = (_thrust_sp + _thrust_dot_sp*0.5f*dt) - (thrust_est+thr_dot*0.5f*dt);
+	float thr_err = (_thrust_sp + _thrust_dot_sp*_params.acro_rate_max(2)*dt) -
+									(thrust_est + thr_dot*_params.acro_rate_max(2)*dt);
 
 	_thr_dot_prev = thr_dot;
 	_thr_prev = thrust_est;
