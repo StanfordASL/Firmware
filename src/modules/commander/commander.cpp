@@ -3990,18 +3990,18 @@ set_control_mode()
 		control_mode.flag_control_manual_enabled = false;
 		control_mode.flag_control_auto_enabled = false;
 		control_mode.flag_control_offboard_enabled = true;
-		control_mode.flag_control_rates_enabled = true;
-		control_mode.flag_control_attitude_enabled = false;
-		control_mode.flag_control_acceleration_enabled = false;
-		control_mode.flag_control_position_enabled = false;
-		control_mode.flag_control_velocity_enabled = false;
-		control_mode.flag_control_altitude_enabled = false;
-		control_mode.flag_control_climb_rate_enabled = false;
+		// control_mode.flag_control_rates_enabled = true;
+		// control_mode.flag_control_attitude_enabled = false;
+		// control_mode.flag_control_acceleration_enabled = false;
+		// control_mode.flag_control_position_enabled = false;
+		// control_mode.flag_control_velocity_enabled = false;
+		// control_mode.flag_control_altitude_enabled = false;
+		// control_mode.flag_control_climb_rate_enabled = false;
 		/*
 		 * The control flags depend on what is ignored according to the offboard control mode topic
 		 * Inner loop flags (e.g. attitude) also depend on outer loop ignore flags (e.g. position)
 		 */
-		 /*
+
 		control_mode.flag_control_rates_enabled = !offboard_control_mode.ignore_bodyrate ||
 			!offboard_control_mode.ignore_attitude ||
 			!offboard_control_mode.ignore_position ||
@@ -4030,7 +4030,7 @@ set_control_mode()
 
 		control_mode.flag_control_altitude_enabled = (!offboard_control_mode.ignore_velocity ||
 			!offboard_control_mode.ignore_position) && !control_mode.flag_control_acceleration_enabled;
-			*/
+		
 		break;
 
 	default:
