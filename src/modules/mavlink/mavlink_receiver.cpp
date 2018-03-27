@@ -1121,7 +1121,7 @@ MavlinkReceiver::handle_message_local_position_ned_cov(mavlink_message_t *msg)
 
 	struct vehicle_local_position_s vision_position = {};
 
-	vision_position.timestamp = sync_stamp(pos.time_usec);
+	vision_position.timestamp = hrt_absolute_time(); //sync_stamp(pos.time_usec);
 
 	vision_position.xy_valid = true;
 	vision_position.z_valid = true;
@@ -1193,7 +1193,7 @@ MavlinkReceiver::handle_message_vision_position_estimate(mavlink_message_t *msg)
 
 	struct vehicle_attitude_s vision_attitude = {};
 
-	vision_attitude.timestamp = sync_stamp(pos.usec);
+	vision_attitude.timestamp = hrt_absolute_time(); //sync_stamp(pos.usec);
 
 	matrix::Quatf q(matrix::Eulerf(pos.roll, pos.pitch, pos.yaw));
 	q.copyTo(vision_attitude.q);

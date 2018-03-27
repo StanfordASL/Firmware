@@ -140,7 +140,7 @@ typedef enum VEHICLE_MODE_FLAG
 
 #define POSITION_TIMEOUT		1			/**< default number of seconds of position health check failure required to declare the position invalid */
 #define FAILSAFE_DEFAULT_TIMEOUT	(3 * 1000 * 1000)	/**< hysteresis time - the failsafe will trigger after 3 seconds in this state */
-#define OFFBOARD_TIMEOUT		500000
+#define OFFBOARD_TIMEOUT		5000000
 #define DIFFPRESS_TIMEOUT		2000000
 
 #define HOTPLUG_SENS_TIMEOUT		(8 * 1000 * 1000)	/**< wait for hotplug sensors to come online for upto 8 seconds */
