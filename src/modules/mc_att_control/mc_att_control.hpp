@@ -50,6 +50,7 @@
 #include <uORB/topics/sensor_bias.h>
 #include <uORB/topics/sensor_correction.h>
 #include <uORB/topics/sensor_gyro.h>
+#include <uORB/topics/vehicle_local_position.h>
 #include <uORB/topics/vehicle_attitude.h>
 #include <uORB/topics/vehicle_attitude_setpoint.h>
 #include <uORB/topics/vehicle_control_mode.h>
@@ -107,6 +108,12 @@ private:
 	void		vehicle_motor_limits_poll();
 	void		vehicle_rates_setpoint_poll();
 	void		vehicle_status_poll();
+	void 		vehicle_position_poll();
+
+	/**
+	 * Thrust estimator.
+	 */
+	void		estimate_thrust(float dt);
 
 	/**
 	 * Attitude controller.
@@ -117,6 +124,11 @@ private:
 	 * Attitude rates controller.
 	 */
 	void		control_attitude_rates(float dt);
+
+	/**
+	 * Thrust controller (only for offboard traj control).
+	 */
+	void		control_thrust(float dt);
 
 	/**
 	 * Throttle PID attenuation.
@@ -136,6 +148,7 @@ private:
 	int		_sensor_gyro_sub[MAX_GYRO_COUNT];	/**< gyro data subscription */
 	int		_sensor_correction_sub{-1};	/**< sensor thermal correction subscription */
 	int		_sensor_bias_sub{-1};		/**< sensor in-run bias correction subscription */
+	int		_local_pos_sub{-1};			/**< vehicle local position */
 
 	unsigned _gyro_count{1};
 	int _selected_gyro{0};
@@ -160,6 +173,7 @@ private:
 	struct sensor_gyro_s			_sensor_gyro {};	/**< gyro data before thermal correctons and ekf bias estimates are applied */
 	struct sensor_correction_s		_sensor_correction {};	/**< sensor thermal corrections */
 	struct sensor_bias_s			_sensor_bias {};	/**< sensor in-run bias corrections */
+	struct vehicle_local_position_s			_local_pos {};		/**< vehicle local position */
 
 	MultirotorMixer::saturation_status _saturation_status{};
 
@@ -169,6 +183,7 @@ private:
 	static constexpr const float initial_update_rate_hz = 250.f; /**< loop update rate used for initialization */
 	float _loop_update_rate_hz{initial_update_rate_hz};          /**< current rate-controller loop update rate in [Hz] */
 
+	matrix::Vector3f _rates_sp_prev; /**< rates sp prev */
 	matrix::Vector3f _rates_prev;			/**< angular rates on previous step */
 	matrix::Vector3f _rates_prev_filtered;		/**< angular rates on previous step (low-pass filtered) */
 	matrix::Vector3f _rates_sp;			/**< angular rates setpoint */
@@ -177,6 +192,19 @@ private:
 	matrix::Vector3f _att_control;			/**< attitude control vector */
 
 	matrix::Dcmf _board_rotation;			/**< rotation matrix for the orientation that the board is mounted */
+
+	// For Thrust estimation
+	matrix::Dcmf _R;
+	matrix::Dcmf _R_prev;
+	float _raw_thrust_est_sum;
+	float _raw_thrust_est;
+	matrix::Vector3f _vel;
+	matrix::Vector3f _vel_prev;
+
+	// For Thrust control
+	float _thrust_sp_prev;
+	float _raw_thrust_err_int;
+	bool offboard_started;
 
 	DEFINE_PARAMETERS(
 		(ParamFloat<px4::params::MC_ROLL_P>) _roll_p,
@@ -249,4 +277,3 @@ private:
 	matrix::Vector3f _acro_rate_max;	/**< max attitude rates in acro mode */
 
 };
-
