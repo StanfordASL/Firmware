@@ -342,33 +342,33 @@ PARAM_DEFINE_FLOAT(MC_YAWRATE_MAX, 200.0f);
 PARAM_DEFINE_FLOAT(MC_YAWRAUTO_MAX, 45.0f);
 
 /**
- * Max acro roll rate
+ * Prop gain for thrust controller
  * default: 2 turns per second
  *
- * @unit deg/s
+ * @unit deg
  * @min 0.0
  * @max 1800.0
  * @decimal 1
  * @increment 5
  * @group Multicopter Attitude Control
  */
-PARAM_DEFINE_FLOAT(MC_ACRO_R_MAX, 720.0f);
+PARAM_DEFINE_FLOAT(MC_ACRO_R_MAX, 0.001f);
 
 /**
- * Max acro pitch rate
+ * Int gain for thrust controller
  * default: 2 turns per second
  *
- * @unit deg/s
+ * @unit deg
  * @min 0.0
  * @max 1800.0
  * @decimal 1
  * @increment 5
  * @group Multicopter Attitude Control
  */
-PARAM_DEFINE_FLOAT(MC_ACRO_P_MAX, 720.0f);
+PARAM_DEFINE_FLOAT(MC_ACRO_P_MAX, 0.001f);
 
 /**
- * Max acro yaw rate
+ * Thrust est MA_N
  * default 1.5 turns per second
  *
  * @unit deg/s
@@ -378,7 +378,7 @@ PARAM_DEFINE_FLOAT(MC_ACRO_P_MAX, 720.0f);
  * @increment 5
  * @group Multicopter Attitude Control
  */
-PARAM_DEFINE_FLOAT(MC_ACRO_Y_MAX, 540.0f);
+PARAM_DEFINE_FLOAT(MC_ACRO_Y_MAX, 5.0f);
 
 /**
  * Acro mode Expo factor for Roll and Pitch.
@@ -589,4 +589,3 @@ PARAM_DEFINE_FLOAT(MC_DTERM_CUTOFF, 30.f);
  * @group Multicopter Attitude Control
  */
 PARAM_DEFINE_INT32(MC_AIRMODE, 0);
-

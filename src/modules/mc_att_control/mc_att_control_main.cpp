@@ -198,9 +198,9 @@ MulticopterAttitudeControl::parameters_updated()
 	_auto_rate_max(2) = math::radians(_yaw_auto_max.get());
 
 	/* manual rate control acro mode rate limits and expo */
-	_acro_rate_max(0) = math::radians(_acro_roll_max.get());
-	_acro_rate_max(1) = math::radians(_acro_pitch_max.get());
-	_acro_rate_max(2) = math::radians(_acro_yaw_max.get());
+	_acro_rate_max(0) = _acro_roll_max.get(); // math::radians(_acro_roll_max.get());
+	_acro_rate_max(1) = _acro_pitch_max.get(); // math::radians(_acro_pitch_max.get());
+	_acro_rate_max(2) = _acro_yaw_max.get(); //math::radians(_acro_yaw_max.get());
 
 	_actuators_0_circuit_breaker_enabled = circuit_breaker_enabled("CBRK_RATE_CTRL", CBRK_RATE_CTRL_KEY);
 
@@ -417,8 +417,8 @@ MulticopterAttitudeControl::estimate_thrust(float dt)
 
 	float fz_est_up = -acc * R_z;
 
-	_raw_thrust_est_sum += fz_est_up - (_raw_thrust_est_sum/THRUST_MA_N);
-	_raw_thrust_est = _raw_thrust_est_sum/THRUST_MA_N;
+	_raw_thrust_est_sum += fz_est_up - (_raw_thrust_est_sum/_acro_rate_max(2));
+	_raw_thrust_est = _raw_thrust_est_sum/_acro_rate_max(2);
 
 	// PX4_INFO("%.4f", (double)_raw_thrust_est);
 }
@@ -693,7 +693,7 @@ MulticopterAttitudeControl::control_thrust(float dt){
 	float raw_thrust_err = raw_thrust_sp - _raw_thrust_est;
 	_raw_thrust_err_int += raw_thrust_err * dt;
 
-	_thrust_sp = _thrust_sp_prev + 0.008f* raw_thrust_err + 0.006f*_raw_thrust_err_int;
+	_thrust_sp = _thrust_sp_prev + _acro_rate_max(0)* raw_thrust_err + _acro_rate_max(1)*_raw_thrust_err_int;
 }
 
 void
