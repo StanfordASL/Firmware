@@ -129,8 +129,10 @@ MulticopterAttitudeControl::MulticopterAttitudeControl() :
 
 	_R.identity();
 	_R_prev.identity();
-	_raw_thrust_est_sum = 9.8066f * THRUST_MA_N;
-	_raw_thrust_est = 9.8066f;
+	// _raw_thrust_est_sum = 9.8066f * THRUST_MA_N;
+	// _raw_thrust_est = 9.8066f;
+	_accel_est_sum.zero();
+	_accel_est.zero();
 	_vel.zero();
 	_vel_prev.zero();
 
@@ -411,14 +413,17 @@ MulticopterAttitudeControl::estimate_thrust(float dt)
 	// math::Vector<3> acc(_local_pos.ax, _local_pos.ay, _local_pos.az);
 	_vel_prev = _vel;
 
-	acc(2) += -9.8066f;
+	_accel_est_sum += acc - (1.0f/_acro_rate_max(2))*_accel_est_sum;
+	_accel_est = _accel_est_sum/_acro_rate_max(2);
 
-	Vector3f R_z(_R(0,2), _R(1,2), _R(2,2));
+	// acc(2) += -9.8066f;
 
-	float fz_est_up = -acc * R_z;
+	// Vector3f R_z(_R(0,2), _R(1,2), _R(2,2));
 
-	_raw_thrust_est_sum += fz_est_up - (_raw_thrust_est_sum/_acro_rate_max(2));
-	_raw_thrust_est = _raw_thrust_est_sum/_acro_rate_max(2);
+	// float fz_est_up = acc * R_z;
+
+	// _raw_thrust_est_sum += fz_est_up - (_raw_thrust_est_sum/_acro_rate_max(2));
+	// _raw_thrust_est = _raw_thrust_est_sum/_acro_rate_max(2);
 
 	// PX4_INFO("%.4f", (double)_raw_thrust_est);
 }
@@ -688,12 +693,25 @@ MulticopterAttitudeControl::control_thrust(float dt){
 	}
 
 	// Update raw thrust sp
-	float raw_thrust_sp = (_thrust_sp/0.56f) * 9.8066f;
+	// float raw_thrust_sp = (_thrust_sp/0.56f) * 9.8066f;
 
-	float raw_thrust_err = raw_thrust_sp - _raw_thrust_est;
-	_raw_thrust_err_int += raw_thrust_err * dt;
+	Vector3f grav(0.0f, 0.0f, 9.8066f);
+	Vector3f R_z(_R(0,2), _R(1,2), _R(2,2));
 
-	_thrust_sp = _thrust_sp_prev + _acro_rate_max(0)* raw_thrust_err + _acro_rate_max(1)*_raw_thrust_err_int;
+	float acc_z_des = (_thrust_sp/0.56f) * 9.8066f - grav * R_z;
+	float acc_z_act = -_accel_est * R_z;
+
+	float acc_z_err = acc_z_des - acc_z_act;
+	_raw_thrust_err_int += acc_z_err*dt;
+
+	_thrust_sp = _thrust_sp_prev + _acro_rate_max(0)*acc_z_err + _acro_rate_max(1)*_raw_thrust_err_int;
+
+
+
+	// float raw_thrust_err = raw_thrust_sp - _raw_thrust_est;
+	// _raw_thrust_err_int += raw_thrust_err * dt;
+
+	// _thrust_sp = _thrust_sp_prev + _acro_rate_max(0)* raw_thrust_err + _acro_rate_max(1)*_raw_thrust_err_int;
 }
 
 void
