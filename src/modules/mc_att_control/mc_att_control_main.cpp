@@ -199,6 +199,10 @@ MulticopterAttitudeControl::parameters_updated()
 	_acro_rate_max(0) = _acro_roll_max.get(); // math::radians(_acro_roll_max.get());
 	_acro_rate_max(1) = _acro_pitch_max.get(); // math::radians(_acro_pitch_max.get());
 	_acro_rate_max(2) = _acro_yaw_max.get(); //math::radians(_acro_yaw_max.get());
+	_thrust_p_gain = _acro_roll_max.get();
+	_thrust_i_gain = _acro_pitch_max.get();
+	_thrust_ma_N = _acro_yaw_max.get();
+	_thrust_d_gain = _acro_expo_rp.get();
 
 	_actuators_0_circuit_breaker_enabled = circuit_breaker_enabled("CBRK_RATE_CTRL", CBRK_RATE_CTRL_KEY);
 
@@ -409,8 +413,8 @@ MulticopterAttitudeControl::estimate_thrust(float dt)
 	// math::Vector<3> acc(_local_pos.ax, _local_pos.ay, _local_pos.az);
 	_vel_prev = _vel;
 
-	_accel_est_sum += acc - (1.0f/_acro_rate_max(2))*_accel_est_sum;
-	_accel_est = _accel_est_sum/_acro_rate_max(2);
+	_accel_est_sum += acc - (1.0f/_thrust_ma_N)*_accel_est_sum;
+	_accel_est = _accel_est_sum/_thrust_ma_N;
 
 }
 
@@ -680,7 +684,7 @@ MulticopterAttitudeControl::control_thrust(float dt){
 
 	float raw_thrust_sp = (_thrust_sp/0.56f) * 9.8066f;
 
-	float raw_thrust_dt = (raw_thrust_sp - _raw_thrust_sp_prev)/dt;
+	// float raw_thrust_dt = (raw_thrust_sp - _raw_thrust_sp_prev)/0.004f;
 	_raw_thrust_sp_prev = raw_thrust_sp;
 
 	Vector3f grav(0.0f, 0.0f, 9.8066f);
@@ -692,9 +696,8 @@ MulticopterAttitudeControl::control_thrust(float dt){
 	float acc_z_err = acc_z_des - acc_z_act;
 	_acc_err_int += acc_z_err*dt;
 
-	_thrust_sp = _thrust_sp_prev + _acro_rate_max(0) * acc_z_err + _acro_rate_max(1) * _acc_err_int +
-																0.1f * _acro_rate_max(0) * raw_thrust_dt;
-
+	_thrust_sp = _thrust_sp_prev + _thrust_p_gain* acc_z_err + _thrust_i_gain * _acc_err_int;
+																// _thrust_d_gain * raw_thrust_dt;
 
 }
 

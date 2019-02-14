@@ -206,6 +206,10 @@ private:
 	float _acc_err_int;
 	float _raw_thrust_sp_prev;
 	bool offboard_started;
+	float _thrust_p_gain;
+	float _thrust_i_gain;
+	float _thrust_d_gain;
+	float _thrust_ma_N;
 
 	DEFINE_PARAMETERS(
 		(ParamFloat<px4::params::MC_ROLL_P>) _roll_p,
