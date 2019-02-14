@@ -196,8 +196,6 @@ private:
 	// For Thrust estimation
 	matrix::Dcmf _R;
 	matrix::Dcmf _R_prev;
-	// float _raw_thrust_est_sum;
-	// float _raw_thrust_est;
 	matrix::Vector3f _accel_est_sum;
 	matrix::Vector3f _accel_est;
 	matrix::Vector3f _vel;
@@ -205,7 +203,8 @@ private:
 
 	// For Thrust control
 	float _thrust_sp_prev;
-	float _raw_thrust_err_int;
+	float _acc_err_int;
+	float _raw_thrust_sp_prev;
 	bool offboard_started;
 
 	DEFINE_PARAMETERS(
