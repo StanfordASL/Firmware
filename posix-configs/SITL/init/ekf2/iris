@@ -54,10 +54,11 @@ param set MC_ACRO_P_MAX 0.006
 param set MC_ACRO_Y_MAX 2
 
 
-# ROLLRATE: 0.15, 0.05, 0.003
-# PITCHRATE: 0.15, 0.05, 0.003
+# Experiment params:
+# ROLLRATE: 0.20, 0.1, 0.004
+# PITCHRATE: 0.18, 0.05, 0.003
 # YAWRATE: 0.2, 0.1, 0
-# Thrust: 0.002, 0.001, 5.0
+# Thrust: 0.005, 0.004, 3.0
 
 param set MIS_TAKEOFF_ALT 2.5
 param set MPC_HOLD_MAX_Z 2.0
