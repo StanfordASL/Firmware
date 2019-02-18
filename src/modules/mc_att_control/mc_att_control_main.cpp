@@ -131,6 +131,7 @@ MulticopterAttitudeControl::MulticopterAttitudeControl() :
 	_vel.zero();
 	_vel_prev.zero();
 
+	_euler_rates_sp.zero();
 	_thrust_sp_prev = 0.0f;
 	_raw_thrust_sp_prev = 9.8066f;
 	_acc_err_int = 0.0f;
@@ -591,11 +592,11 @@ MulticopterAttitudeControl::control_attitude_rates(float dt)
 		float yaw = atan2f(-_R(0,1),_R(0,0));
 		float pitch = asinf(_R(0,2));
 
-		Vector3f euler_rates_sp = _rates_sp;
+		_euler_rates_sp = _rates_sp;
 
-		_rates_sp(0) =  cosf(pitch)*cosf(yaw)*euler_rates_sp(0) + sinf(yaw)*euler_rates_sp(1);
-		_rates_sp(1) = -cosf(pitch)*sinf(yaw)*euler_rates_sp(0) + cosf(yaw)*euler_rates_sp(1);
-		_rates_sp(2) =  sinf(pitch)*euler_rates_sp(0) + euler_rates_sp(2);
+		_rates_sp(0) =  cosf(pitch)*cosf(yaw)*_euler_rates_sp(0) + sinf(yaw)*_euler_rates_sp(1);
+		_rates_sp(1) = -cosf(pitch)*sinf(yaw)*_euler_rates_sp(0) + cosf(yaw)*_euler_rates_sp(1);
+		_rates_sp(2) =  sinf(pitch)*_euler_rates_sp(0) + _euler_rates_sp(2);
 
 		// PX4_INFO("(%.4f, %.4f, %.4f: %.4f, %.4f, %.4f)", (double)roll, (double)pitch, (double)yaw,
 		// 					(double)_rates_sp(0), (double)_rates_sp(1), (double)_rates_sp(2));
@@ -624,6 +625,8 @@ MulticopterAttitudeControl::control_attitude_rates(float dt)
 	_rates_prev_filtered = rates_filtered;
 	_R_prev = _R;
 	_rates_sp_prev = _rates_sp;
+
+	_rates_sp = _euler_rates_sp;
 
 	/* update integral only if motors are providing enough thrust to be effective */
 	if (_thrust_sp > MIN_TAKEOFF_THRUST) {

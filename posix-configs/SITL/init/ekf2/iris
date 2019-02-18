@@ -59,6 +59,13 @@ param set MC_ACRO_Y_MAX 2
 # PITCHRATE: 0.18, 0.05, 0.003
 # YAWRATE: 0.2, 0.1, 0
 # Thrust: 0.005, 0.004, 3.0
+# Thrust_alt: 0.007, 0.006, 3.0
+
+# New props experiments
+# ROLLRATE: 0.15, 0.1, 0.004
+# PITCHRATE: 0.15, 0.05, 0.003
+# YAWRATE: 0.2, 0.1, 0
+# Thrust: 0.003, 0.001, 3.0
 
 param set MIS_TAKEOFF_ALT 2.5
 param set MPC_HOLD_MAX_Z 2.0

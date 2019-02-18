@@ -201,6 +201,8 @@ private:
 	matrix::Vector3f _vel;
 	matrix::Vector3f _vel_prev;
 
+	matrix::Vector3f _euler_rates_sp;
+
 	// For Thrust control
 	float _thrust_sp_prev;
 	float _acc_err_int;
