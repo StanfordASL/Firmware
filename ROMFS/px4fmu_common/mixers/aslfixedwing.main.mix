@@ -4,7 +4,6 @@ Mixer for ASL Fixedwing plane
 This mixer file defines how the commands for:
 
 Control Group #0: roll, pitch, yaw, throttle
-Control Group #3: RC roll, RC pitch, RC yaw, RC throttle
 
 are mapped into commands to be send to the individual servos. The outputs
 are ordered in a similar way as for the Standard Plane in the PX4 database:
@@ -21,25 +20,21 @@ MAIN1: Aileron mixer
 M: 1
 O:       10000   10000      0  -10000  10000
 S: 0 0   10000   10000      0  -10000  10000
-S: 3 0   10000   10000		0  -10000  10000
 
 MAIN2: Elevator mixer
 ------------
 M: 1
 O:       10000   10000      0  -10000  10000
 S: 0 1   10000   10000      0  -10000  10000
-S: 3 1   10000   10000      0  -10000  10000
 
 MAIN3: Throttle mixer
 ------------
 M: 1
 O:       10000   10000      0  -10000  10000
 S: 0 3       0   20000 -10000  -10000  10000
-S: 3 3       0   20000 -10000  -10000  10000
 
 MAIN4: Rudder mixer
 ------------
 M: 1
 O:       10000   10000      0  -10000  10000
 S: 0 2   10000   10000      0  -10000  10000
-S: 3 2   10000   10000      0  -10000  10000
