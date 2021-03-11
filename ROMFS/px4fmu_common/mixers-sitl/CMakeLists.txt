@@ -32,6 +32,7 @@
 ############################################################################
 
 px4_add_romfs_files(
+	aslfixedwing_sitl.main.mix
 	delta_wing_sitl.main.mix
 	plane_sitl.main.mix
 	over_sitl.main.mix

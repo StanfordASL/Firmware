@@ -1,0 +1,67 @@
+Mixer for ASL Fixedwing plane Gazebo simulations
+=========================================================
+
+This mixer file defines how the commands for:
+
+Control Group #0: roll, pitch, yaw, throttle
+Control Group #3: RC roll, RC pitch, RC yaw, RC throttle
+
+are mapped into commands to be send to the individual servos. The outputs
+are ordered in a similar way as for the Standard Plane sim in the PX4 database:
+
+MAIN1: none
+MAIN2: none
+MAIN3: rudder
+MAIN4: none
+MAIN5: throttle
+MAIN6: left aileron
+MAIN7: right aileron
+MAIN8: elevator
+
+MAIN1: none
+-------------
+Z:
+
+MAIN2: none
+-------------
+Z:
+
+MAIN3: Rudder mixer
+------------
+M: 1
+O:       10000   10000      0  -10000  10000
+S: 0 2   10000   10000      0  -10000  10000
+S: 3 2   10000   10000      0  -10000  10000
+
+MAIN4: none
+-------------
+Z:
+
+MAIN5: Throttle mixer
+------------
+M: 1
+O:       10000   10000      0  -10000  10000
+S: 0 3       0   20000 -10000  -10000  10000
+S: 3 3       0   20000 -10000  -10000  10000
+
+MAIN6:Left  Aileron mixer
+It is assumed that the aileron servos are coupled to work anti-symetrically.
+-------------
+M: 1
+O:       10000   10000      0  -10000  10000
+S: 0 0  -10000  -10000      0  -10000  10000
+S: 3 0  -10000  -10000		0  -10000  10000
+
+MAIN7: Right Aileron mixer
+-------------
+M: 1
+O:       10000   10000      0  -10000  10000
+S: 0 0   10000   10000      0  -10000  10000
+S: 3 0   10000   10000      0  -10000  10000
+
+MAIN8: Elevator mixer
+------------
+M: 1
+O:       10000   10000      0  -10000  10000
+S: 0 1   10000   10000      0  -10000  10000
+S: 3 1   10000   10000      0  -10000  10000

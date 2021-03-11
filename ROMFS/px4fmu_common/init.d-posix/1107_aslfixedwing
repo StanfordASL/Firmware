@@ -39,4 +39,5 @@ then
 
 fi
 
-set MIXER aslfixedwing
+set MIXER_FILE etc/mixers-sitl/aslfixedwing_sitl.main.mix
+set MIXER custom
